@@ -1,1 +1,44 @@
+name: AKS-Cluster-Action
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
+jobs:
+
+  validates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: tf.fmt
+        run:  terraform fmt -check -recursive
+
+      - name: tf.init
+        run: terraform init
+
+      - name: tf.validate
+        run: terraform validate
+      
+  tflint:
+   needs: validates
+   runs-on: ubuntu-latest
+
+   steps:
+     - uses: actions/checkout@v6
+
+     - uses: terraform-linters/setup-tflint@v4
+
+     - name: tflinter install and check
+       run: |
+         tflint --init
+         tflint
+      
+
+  
+  
+  
+  
