@@ -37,7 +37,49 @@ jobs:
          tflint --init
          tflint
       
+  tfsec:
+   needs: tflint
+   runs-on: ubuntu-latest
 
+   steps:
+     - uses: actions/checkout@v6
+      
+     - name: tfsec
+       uses: aquasecurity/tfsec-action@v1.0.3
+
+  plan:
+   needs: tfsec
+   runs-on: ubuntu-latest
+
+   steps:
+     - uses: actions/checkout@v6
+
+     - uses: hashicorp/setup-terraform@v3
+
+     - name: tf.init
+       run: terraform init
+
+     - name: tf.plan
+       run: terraform plan
+
+  apply:
+   needs: plan
+   runs-on: ubuntu-latest
+
+   steps:
+     - uses:  actions/checkout@v6
+
+     - uses: hashicorp/setup-terraform@v3
+
+     - name: terraform init
+       run:  terraform init
+
+     - name: terraform apply
+       run: terraform apply
+       
+    
+       
+       
   
   
   
