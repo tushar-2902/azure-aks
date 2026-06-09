@@ -43,7 +43,7 @@ jobs:
         run: |
           tflint --init
           tflint
-        working-directory: Env/Dev
+        # working-directory: Env/Dev
 
   tfsec:
     needs: tflint
@@ -54,8 +54,8 @@ jobs:
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: Env/Dev
+        # with:
+          # working_directory: Env/Dev
 
   plan:
     needs: tfsec
