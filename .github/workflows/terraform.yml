@@ -1,88 +1,92 @@
 name: AKS-Cluster-Action
+
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
-    #fg
+  pull_request:
+    branches:
+      - main
 
 jobs:
 
   validates:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: hashicorp/setup-terraform@v3
 
-      # - name: tf.fmt
-      #   run:  terraform fmt -check -recursive
+      # - name: Terraform Format
+      #   run: terraform fmt -check -recursive
 
-      - name: tf.init
+      - name: Terraform Init
         run: terraform init
+        working-directory: Env/Dev
 
-      - name: tf.validate
+      - name: Terraform Validate
         run: terraform validate
-      
+        working-directory: Env/Dev
+
   tflint:
-   needs: validates
-   runs-on: ubuntu-latest
+    needs: validates
+    runs-on: ubuntu-latest
 
-   steps:
-     - uses: actions/checkout@v6
+    steps:
+      - uses: actions/checkout@v4
 
-     - uses: terraform-linters/setup-tflint@v4
+      - uses: terraform-linters/setup-tflint@v4
 
-     - name: tflinter install and check
-       run: |
-         tflint --init
-         tflint
-      
+      - name: Run TFLint
+        run: |
+          tflint --init
+          tflint
+        working-directory: Env/Dev
+
   tfsec:
-   needs: tflint
-   runs-on: ubuntu-latest
+    needs: tflint
+    runs-on: ubuntu-latest
 
-   steps:
-     - uses: actions/checkout@v6
-      
-     - name: tfsec
-       uses: aquasecurity/tfsec-action@v1.0.3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: Env/Dev
 
   plan:
-   needs: tfsec
-   runs-on: ubuntu-latest
+    needs: tfsec
+    runs-on: ubuntu-latest
 
-   steps:
-     - uses: actions/checkout@v6
+    steps:
+      - uses: actions/checkout@v4
 
-     - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v3
 
-     - name: tf.init
-       run: terraform init
+      - name: Terraform Init
+        run: terraform init
+        working-directory: Env/Dev
 
-     - name: tf.plan
-       run: terraform plan
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: Env/Dev
 
   apply:
-   needs: plan
-   runs-on: ubuntu-latest
+    needs: plan
+    runs-on: ubuntu-latest
 
-   steps:
-     - uses:  actions/checkout@v6
+    steps:
+      - uses: actions/checkout@v4
 
-     - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v3
 
-     - name: terraform init
-       run:  terraform init
+      - name: Terraform Init
+        run: terraform init
+        working-directory: Env/Dev
 
-     - name: terraform apply
-       run: terraform apply
-       
-    
-       
-       
-  
-  
-  
-  
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: Env/Dev
