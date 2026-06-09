@@ -9,6 +9,10 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -18,20 +22,11 @@ env:
 jobs:
 
   validate:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -45,13 +40,10 @@ jobs:
         working-directory: Env/Dev
 
   tflint:
-
     needs: validate
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -65,13 +57,10 @@ jobs:
         working-directory: Env/Dev
 
   tfsec:
-
     needs: tflint
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -81,13 +70,10 @@ jobs:
           working_directory: Env/Dev
 
   plan:
-
     needs: tfsec
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -110,15 +96,11 @@ jobs:
         working-directory: Env/Dev
 
   apply:
-
     needs: plan
-
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/main'
-
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
