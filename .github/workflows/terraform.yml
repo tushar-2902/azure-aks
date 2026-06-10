@@ -9,10 +9,6 @@ on:
     branches:
       - main
 
-permissions:
-  id-token: write
-  contents: read
-
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -54,7 +50,7 @@ jobs:
         run: |
           tflint --init
           tflint
-        # working-directory: Env/Dev
+        working-directory: Env/Dev
 
   tfsec:
     needs: tflint
@@ -66,8 +62,8 @@ jobs:
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.3
-        # with:
-        #   working_directory: Env/Dev
+        with:
+          working_directory: Env/Dev
 
   plan:
     needs: tfsec
@@ -76,13 +72,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -103,13 +92,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
