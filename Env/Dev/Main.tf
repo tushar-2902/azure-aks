@@ -4,6 +4,8 @@ module "rg_dev" {
   
 }
 
+
+
 module "vn_dev" {
   depends_on = [ module.rg_dev ]
   source = "../../Modules/Virtual_network"
