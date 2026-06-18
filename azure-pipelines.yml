@@ -13,4 +13,19 @@ stages:
         steps:
           - checkout: self
 
-           
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+          
+
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: 'Env/Dev'
+              backendServiceArm: ''
+              backendAzureRmStorageAccountName: 'tusharstorage420'
+              backendAzureRmContainerName: 'container'
+              backendAzureRmKey: 'tushar.tfstate'
+
+              
