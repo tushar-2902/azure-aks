@@ -1,0 +1,16 @@
+trigger: main
+
+pool:
+ vmImage:  ubuntu-latest
+
+stages:
+  - stage: Terraform validation
+    displayName: Terraform Validate
+
+    jobs:
+      - job: Validate
+        
+        steps:
+          - checkout: self
+
+           
