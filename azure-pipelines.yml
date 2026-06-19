@@ -1,10 +1,13 @@
-trigger: main
+trigger: 
+  branches:
+     include:
+       - main
 
 pool:
  vmImage:  ubuntu-latest
 
 stages:
-  - stage: Terraform validation
+  - stage: Terraformvalidation
     displayName: Terraform Validate
 
     jobs:
@@ -17,17 +20,23 @@ stages:
             inputs:
               terraformVersion: 'latest'
           
-
+  
           - task: TerraformTask@5
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: 'Env/Dev'
-              backendServiceArm: ''
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Env/Dev'
+              backendServiceArm: 'tushar'
               backendAzureRmStorageAccountName: 'tusharstorage420'
               backendAzureRmContainerName: 'container'
               backendAzureRmKey: 'tushar.tfstate'
 
+          - task: TerraformTask@5
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'tushar'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Env/Dev'
               
 
 
